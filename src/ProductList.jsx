@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./ProductList.css";
 import CartItem from "./CartItem";
 import { useDispatch } from "react-redux";
 import { addItem } from "./CartSlice";
+import { useSelector } from "react-redux";
 
 function ProductList({ onHomeClick }) {
   const [showCart, setShowCart] = useState(false);
-  const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-  const [addedToCart, setAddedToCart] = useState({});
+  const cartItems = useSelector((state) => state.cart.items);
 
   const dispatch = useDispatch();
 
   const handleAddToCart = (product) => {
     dispatch(addItem(product));
-    setAddedToCart((prevState) => ({ ...prevState, [product.name]: true }));
+  };
+
+  const calculateTotalQuantity = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
   const plantsArray = [
@@ -229,11 +232,11 @@ function ProductList({ onHomeClick }) {
   ];
   const styleObj = {
     backgroundColor: "#4CAF50",
-    color: "#fff!important",
+    color: "#fff",
     padding: "15px",
     display: "flex",
     justifyContent: "space-between",
-    alignIems: "center",
+    alignItems: "center",
     fontSize: "20px",
   };
   const styleObjUl = {
@@ -259,7 +262,6 @@ function ProductList({ onHomeClick }) {
   };
   const handlePlantsClick = (e) => {
     e.preventDefault();
-    setShowPlants(true); // Set showAboutUs to true when "About Us" link is clicked
     setShowCart(false); // Hide the cart when navigating to About Us
   };
 
@@ -272,8 +274,11 @@ function ProductList({ onHomeClick }) {
       <div className="navbar" style={styleObj}>
         <div className="tag">
           <div className="luxury">
-            <img src="https://cdn.pixabay.com/photo/2020/08/05/13/12/eco-5465432_1280.png" alt="" />
             <a href="/" onClick={(e) => handleHomeClick(e)}>
+              <img
+                src="https://cdn.pixabay.com/photo/2020/08/05/13/12/eco-5465432_1280.png"
+                alt=""
+              />
               <div>
                 <h3 style={{ color: "white" }}>Paradise Nursery</h3>
                 <i style={{ color: "white" }}>Where Green Meets Serenity</i>
@@ -284,7 +289,7 @@ function ProductList({ onHomeClick }) {
         <div style={styleObjUl}>
           <div>
             {" "}
-            <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>
+            <a onClick={(e) => handlePlantsClick(e)} style={styleA}>
               Plants
             </a>
           </div>
@@ -312,6 +317,9 @@ function ProductList({ onHomeClick }) {
                     id="mainIconPathAttribute"
                   ></path>
                 </svg>
+                {cartItems.length > 0 && (
+                  <span className="cart-count">{calculateTotalQuantity()}</span>
+                )}
               </h1>
             </a>
           </div>
@@ -319,23 +327,27 @@ function ProductList({ onHomeClick }) {
       </div>
       {!showCart ? (
         <div className="product-grid">
-          {plantsArray.map((category, index = category.category) => (
-            <div key={index}>
+          {plantsArray.map((category) => (
+            <div className="category-center" key={category.category}>
               {" "}
-              <h1>
-                <div>{category.category}</div>
-              </h1>
+              <h1 className="h1-category">{category.category}</h1>
               <div className="product-list">
                 {" "}
-                {category.plants.map((plant, plantIndex = plant.name) => (
-                  <div className="product-card" key={plantIndex}>
+                {category.plants.map((plant) => (
+                  <div className="product-card" key={plant.name}>
                     {" "}
                     <img className="product-image" src={plant.image} alt={plant.name} />
                     <div className="product-title">{plant.name}</div>
                     <div className="product-description">{plant.description}</div>{" "}
                     <div className="product-cost">{plant.cost}</div>
-                    <button className="product-button" onClick={() => handleAddToCart(plant)}>
-                      Add to Cart
+                    <button
+                      className="product-button"
+                      onClick={() => handleAddToCart(plant)}
+                      disabled={cartItems.some((item) => item.name === plant.name)}
+                    >
+                      {cartItems.some((item) => item.name === plant.name)
+                        ? "Added to Cart"
+                        : "Add to Cart"}
                     </button>
                   </div>
                 ))}

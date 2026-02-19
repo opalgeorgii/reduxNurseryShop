@@ -8,20 +8,3 @@ State Management: Redux Toolkit
 Styling: CSS, Responsive Media Queries
 Package Management: npm
 Optional Images: Pixabay, Unsplash
-
-e-plantShopping/
-  src/
-    App.jsx
-    AboutUs.jsx
-    ProductList.jsx
-    CartItem.jsx
-    CartSlice.js
-    store.js
-    index.css
-    AboutUs.css
-    ProductList.css
-    CartItem.css
-  public/
-    index.html
-  package.json
-  README.md
